@@ -45,7 +45,7 @@ input[type=text]{
 }
 button{
   border:0;border-radius:12px;padding:12px 16px;
-  font:inherit;font-weight:600;cursor:pointer;
+  font:inherit;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap;
   background:var(--blue);color:#0b1120;min-height:44px;
 }
 button:focus-visible,input:focus-visible{
@@ -104,6 +104,8 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
   <div class="grid">
     <section class="card">
       <h2>我的学习任务</h2>
+      <button id="sync" type="button">同步云端任务</button>
+      <p id="syncStatus" class="note" role="status" aria-live="polite">正在连接云端…</p>
       <div class="stats">
         <span id="count">已完成 0 / 0</span>
         <span id="percent">0%</span>
@@ -122,7 +124,7 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
 
       <ul id="tasks"></ul>
       <p class="note" id="storageNote">
-        自动保存在当前浏览器；换设备或清除浏览器数据后不会同步。
+        云端发布的任务会自动读取；勾选状态和自己添加的任务保存在当前浏览器。
       </p>
       <div id="announcement" role="status" aria-live="polite"></div>
     </section>
@@ -153,7 +155,7 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
     </section>
   </div>
 
-  <footer>学习控制台 · 第一版 · 本地保存</footer>
+  <footer>学习控制台 · 第二版 · 云端任务 + 本地完成记录</footer>
 </main>
 
 <script>
@@ -193,7 +195,7 @@ function save() {
   try {
     localStorage.setItem(KEY, JSON.stringify(tasks));
     document.getElementById("storageNote").textContent =
-      "自动保存在当前浏览器；换设备或清除浏览器数据后不会同步。";
+      "云端发布的任务会自动读取；勾选状态和自己添加的任务保存在当前浏览器。";
   } catch (error) {
     document.getElementById("storageNote").textContent =
       "浏览器无法保存数据，当前更改仅在本次页面打开期间有效。";
@@ -248,6 +250,10 @@ function render() {
     remove.textContent = "删除";
     remove.setAttribute("aria-label", `删除任务：${task.text}`);
     remove.addEventListener("click", () => {
+      if (cloudState.ids.includes(task.id)) {
+        cloudState.hidden = [...new Set([...cloudState.hidden, task.id])];
+        saveCloudState();
+      }
       tasks = tasks.filter(item => item !== task);
       save();
       render();
@@ -291,6 +297,69 @@ document.getElementById("form").addEventListener("submit", event => {
 });
 
 render();
+
+const SYNC_KEY = "coconut-ai-cloud-state-v1";
+let cloudState = {ids: [], hidden: []};
+try {
+  const state = JSON.parse(localStorage.getItem(SYNC_KEY));
+  if (state && Array.isArray(state.ids) && Array.isArray(state.hidden) &&
+      [...state.ids, ...state.hidden].every(id => typeof id === "string"))
+    cloudState = state;
+} catch (error) {}
+function saveCloudState() {
+  try {localStorage.setItem(SYNC_KEY, JSON.stringify(cloudState));}
+  catch (error) {
+    document.getElementById("storageNote").textContent =
+      "浏览器无法保存记录，当前更改仅在本次页面打开期间有效。";
+  }
+}
+async function syncCloud() {
+  const button = document.getElementById("sync");
+  const status = document.getElementById("syncStatus");
+  if (button.disabled) return;
+  button.disabled = true;
+  status.textContent = "正在读取云端任务…";
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12000);
+  try {
+    const response = await fetch("./tasks.json?t=" + Date.now(), {
+      cache:"no-store", signal:controller.signal
+    });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    const data = await response.json();
+    const incoming = data.tasks;
+    if (!Array.isArray(incoming) || incoming.length > 200 ||
+        !incoming.every(t => t && typeof t.id === "string" &&
+          t.id.length > 0 && typeof t.text === "string" &&
+          t.text.trim().length > 0 && t.text.length <= 200) ||
+        new Set(incoming.map(t => t.id)).size !== incoming.length)
+      throw new Error("Invalid cloud tasks");
+    const previous = new Map(tasks.map(t => [t.id, t]));
+    const ids = new Set(incoming.map(t => t.id));
+    const local = tasks.filter(t => !cloudState.ids.includes(t.id) && !ids.has(t.id));
+    const cloud = incoming.filter(t => !cloudState.hidden.includes(t.id)).map(t => ({
+      id:t.id, text:t.text, done:previous.get(t.id)?.done ?? false
+    }));
+    tasks = [...cloud, ...local];
+    cloudState.ids = [...ids];
+    save();
+    saveCloudState();
+    render();
+    status.textContent = "已同步云端任务 · " +
+      new Date().toLocaleTimeString("zh-CN", {hour:"2-digit",minute:"2-digit"});
+  } catch (error) {
+    status.textContent = "暂时无法连接云端，已有任务仍可使用。可点击按钮重试。";
+  } finally {
+    clearTimeout(timer);
+    button.disabled = false;
+  }
+}
+document.getElementById("sync").addEventListener("click", syncCloud);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) syncCloud();
+});
+setInterval(() => {if (!document.hidden) syncCloud();}, 60000);
+syncCloud();
 </script>
 </body>
 </html>

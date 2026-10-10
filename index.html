@@ -1,1 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>椰子鸡的 AI 学习控制台</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0b1120;--card:#151e30;--line:#29354c;
+  --text:#edf2ff;--muted:#a6b3ca;--blue:#8baeff;
+  --green:#69dfb4;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,"PingFang SC",sans-serif;
+  line-height:1.6;
+}
+main{max-width:1050px;margin:auto;padding:32px 20px 60px}
+header{margin-bottom:26px}
+.tag{color:var(--green);font-size:14px}
+h1{font-size:clamp(26px,5vw,38px);margin:8px 0}
+h2{font-size:20px;margin:0 0 16px}
+p{margin:8px 0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
+.card{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:20px;padding:24px;
+}
+.focus{margin-bottom:20px}
+.focus strong{color:var(--green)}
+.stats{display:flex;justify-content:space-between;gap:12px}
+.bar{
+  height:10px;background:var(--line);
+  border-radius:10px;overflow:hidden;margin:12px 0 22px;
+}
+#fill{height:100%;background:var(--green);transition:width .25s}
+form{display:flex;gap:10px;margin-bottom:18px}
+input[type=text]{
+  width:100%;min-width:0;background:var(--bg);color:var(--text);
+  border:1px solid var(--line);border-radius:12px;
+  padding:12px;font:inherit;
+}
+button{
+  border:0;border-radius:12px;padding:12px 16px;
+  font:inherit;font-weight:600;cursor:pointer;
+  background:var(--blue);color:#0b1120;min-height:44px;
+}
+button:focus-visible,input:focus-visible{
+  outline:3px solid var(--green);outline-offset:3px;
+}
+ul{list-style:none;padding:0;margin:0}
+.task{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 0;border-bottom:1px solid var(--line);
+}
+.task label{
+  display:flex;align-items:center;gap:12px;
+  flex:1;min-width:0;cursor:pointer;min-height:44px;
+}
+.task input{width:22px;height:22px;accent-color:var(--green);flex-shrink:0}
+.task span{overflow-wrap:anywhere}
+.task.done span{text-decoration:line-through;color:var(--muted)}
+.delete{
+  background:transparent;color:var(--muted);
+  padding:8px 12px;flex-shrink:0;
+}
+.delete:hover{color:#ff9b9b;background:#342133}
+.step{
+  border-left:2px solid var(--line);padding:0 0 22px 18px;
+}
+.step:last-child{padding-bottom:0}
+.step.current{border-color:var(--green)}
+.step small{color:var(--blue)}
+.step h3{font-size:17px;margin:4px 0}
+.step p{font-size:14px;margin:0}
+.note{font-size:13px;margin-top:18px}
+.empty{text-align:center;padding:20px;color:var(--muted)}
+footer{margin-top:24px;color:var(--muted);font-size:13px}
+@media(max-width:760px){
+  .grid{grid-template-columns:1fr}
+  main{padding:24px 16px 40px}
+  .card{padding:20px}
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="tag">一步一步，学会构建自己的 Agent</div>
+    <h1>椰子鸡的 AI 学习控制台</h1>
+    <p id="date"></p>
+  </header>
 
+  <section class="card focus">
+    <h2>当前学习重点</h2>
+    <p><strong>C 语言 · 单链表插入</strong></p>
+    <p>理解节点之间的连接，练习先连接后继，再修改前驱指针。</p>
+    <p>学习节奏：讲解 → 自己写代码 → 随堂测试 → 批改纠错。</p>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>我的学习任务</h2>
+      <div class="stats">
+        <span id="count">已完成 0 / 0</span>
+        <span id="percent">0%</span>
+      </div>
+      <div class="bar" role="progressbar" aria-label="任务完成进度"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="fill"></div>
+      </div>
+
+      <form id="form">
+        <input id="newTask" type="text" maxlength="200"
+               placeholder="添加一项学习任务…"
+               aria-label="新任务" required>
+        <button type="submit">添加</button>
+      </form>
+
+      <ul id="tasks"></ul>
+      <p class="note" id="storageNote">
+        自动保存在当前浏览器；换设备或清除浏览器数据后不会同步。
+      </p>
+      <div id="announcement" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card">
+      <h2>学习路线</h2>
+      <div class="step current">
+        <small>阶段 01 · 当前重点</small>
+        <h3>C 语言与数据结构</h3>
+        <p>指针、动态内存、链表，再逐步学习栈、队列和树。</p>
+      </div>
+      <div class="step">
+        <small>阶段 02 · 待学习</small>
+        <h3>Python 基础</h3>
+        <p>变量、函数、列表、字典、文件读写与异常处理。</p>
+      </div>
+      <div class="step">
+        <small>阶段 03 · 待学习</small>
+        <h3>第一个 Agent 应用</h3>
+        <p>理解模型调用、工具调用与任务执行，制作简单助手。</p>
+      </div>
+      <div class="step">
+        <small>阶段 04 · 待学习</small>
+        <h3>深入原理与研究</h3>
+        <p>逐步学习模型基础、检索、记忆、评估与实验设计。</p>
+      </div>
+      <p class="note">路线用于规划；掌握当前知识后再进入下一阶段。</p>
+    </section>
+  </div>
+
+  <footer>学习控制台 · 第一版 · 本地保存</footer>
+</main>
+
+<script>
+"use strict";
+
+const KEY = "coconut-ai-dashboard-v1";
+const defaults = [
+  {id:"intro",text:"复习：指针改变指向与释放内存的区别",done:false},
+  {id:"insert",text:"理解单链表插入的两步指针操作",done:false},
+  {id:"practice",text:"自己写一次单链表插入代码",done:false},
+  {id:"review",text:"把代码和解释发给导师批改",done:false}
+];
+
+let tasks = defaults.map(task => ({...task}));
+
+try {
+  const saved = localStorage.getItem(KEY);
+  if (saved !== null) {
+    const parsed = JSON.parse(saved);
+    if (!Array.isArray(parsed) || !parsed.every(task =>
+      task && typeof task.id === "string" &&
+      typeof task.text === "string" && typeof task.done === "boolean"
+    )) throw new Error("Invalid task data");
+    tasks = parsed;
+  }
+} catch (error) {
+  document.getElementById("storageNote").textContent =
+    "无法读取已保存的任务，当前显示初始任务。";
+}
+
+document.getElementById("date").textContent =
+  new Intl.DateTimeFormat("zh-CN", {
+    year:"numeric",month:"long",day:"numeric",weekday:"long"
+  }).format(new Date());
+
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(tasks));
+    document.getElementById("storageNote").textContent =
+      "自动保存在当前浏览器；换设备或清除浏览器数据后不会同步。";
+  } catch (error) {
+    document.getElementById("storageNote").textContent =
+      "浏览器无法保存数据，当前更改仅在本次页面打开期间有效。";
+  }
+}
+
+function render() {
+  const list = document.getElementById("tasks");
+  list.replaceChildren();
+
+  const completed = tasks.filter(task => task.done).length;
+  const progress = tasks.length ?
+    Math.round(completed / tasks.length * 100) : 0;
+
+  document.getElementById("count").textContent =
+    `已完成 ${completed} / ${tasks.length}`;
+  document.getElementById("percent").textContent = `${progress}%`;
+  document.getElementById("fill").style.width = `${progress}%`;
+  document.querySelector('[role="progressbar"]')
+    .setAttribute("aria-valuenow", String(progress));
+
+  if (!tasks.length) {
+    const empty = document.createElement("li");
+    empty.className = "empty";
+    empty.textContent = "还没有任务，添加一个小目标吧。";
+    list.appendChild(empty);
+    return;
+  }
+
+  tasks.forEach(task => {
+    const row = document.createElement("li");
+    row.className = task.done ? "task done" : "task";
+
+    const label = document.createElement("label");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = task.done;
+
+    const text = document.createElement("span");
+    text.textContent = task.text;
+
+    checkbox.addEventListener("change", () => {
+      task.done = checkbox.checked;
+      row.classList.toggle("done", task.done);
+      save();
+      updateProgress();
+    });
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "delete";
+    remove.textContent = "删除";
+    remove.setAttribute("aria-label", `删除任务：${task.text}`);
+    remove.addEventListener("click", () => {
+      tasks = tasks.filter(item => item !== task);
+      save();
+      render();
+      document.getElementById("announcement").textContent = "任务已删除";
+      document.getElementById("newTask").focus();
+    });
+
+    label.append(checkbox, text);
+    row.append(label, remove);
+    list.appendChild(row);
+  });
+}
+
+function updateProgress() {
+  const completed = tasks.filter(task => task.done).length;
+  const progress = tasks.length ?
+    Math.round(completed / tasks.length * 100) : 0;
+  document.getElementById("count").textContent =
+    `已完成 ${completed} / ${tasks.length}`;
+  document.getElementById("percent").textContent = `${progress}%`;
+  document.getElementById("fill").style.width = `${progress}%`;
+  document.querySelector('[role="progressbar"]')
+    .setAttribute("aria-valuenow", String(progress));
+}
+
+document.getElementById("form").addEventListener("submit", event => {
+  event.preventDefault();
+  const input = document.getElementById("newTask");
+  const text = input.value.trim();
+  if (!text) return;
+  tasks.push({
+    id:Date.now().toString(36) + Math.random().toString(36).slice(2),
+    text,
+    done:false
+  });
+  save();
+  render();
+  input.value = "";
+  input.focus();
+  document.getElementById("announcement").textContent = "任务已添加";
+});
+
+render();
+</script>
+</body>
+</html>

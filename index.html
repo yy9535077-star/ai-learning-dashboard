@@ -77,6 +77,16 @@ ul{list-style:none;padding:0;margin:0}
 .step h3{font-size:17px;margin:4px 0}
 .step p{font-size:14px;margin:0}
 .note{font-size:13px;margin-top:18px}
+.module{margin:12px 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.module summary{cursor:pointer;padding:12px;background:#1c2940;font-weight:600;list-style-position:inside}
+.module .module-list{padding:5px 12px 10px}
+.lesson-row{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.lesson-row:last-child{border-bottom:0}
+.lesson-mark{flex-shrink:0;width:20px;text-align:center}
+.lesson-row.passed .lesson-mark{color:var(--green)}
+.lesson-row.active{color:#b6ccff;font-weight:700}
+.lesson-row.pending{color:var(--muted)}
+.module-hint{font-size:12px;color:var(--muted);font-weight:400}
 .empty{text-align:center;padding:20px;color:var(--muted)}
 footer{margin-top:24px;color:var(--muted);font-size:13px}
 @media(max-width:760px){
@@ -134,22 +144,22 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
       <div class="step current">
         <small>阶段 01 · 当前重点</small>
         <h3>C 语言与数据结构</h3>
-        <p>指针、动态内存、链表，再逐步学习栈、队列和树。</p>
+        <div class="stats"><span id="roadmapCount">正在读取逐课进度…</span><span id="roadmapPercent">—</span></div>
+        <div class="bar" role="progressbar" aria-label="第一阶段课程掌握进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="roadmapFill" style="height:100%;width:0;background:var(--green)"></div></div>
+        <p id="roadmapNow">每节课根据代码与测试结果判定，不按日期自动完成。</p>
+        <div id="roadmapModules"></div>
       </div>
       <div class="step">
-        <small>阶段 02 · 待学习</small>
-        <h3>Python 基础</h3>
-        <p>变量、函数、列表、字典、文件读写与异常处理。</p>
+        <small>阶段 02 · 后续</small><h3>Python 基础与实践</h3>
+        <p>基础语法、数据处理、文件、网络与项目实践；达到阶段能力要求后衔接，不必机械学完固定课数。</p>
       </div>
       <div class="step">
-        <small>阶段 03 · 待学习</small>
-        <h3>第一个 Agent 应用</h3>
-        <p>理解模型调用、工具调用与任务执行，制作简单助手。</p>
+        <small>阶段 03 · 后续</small><h3>AI Agent 应用开发</h3>
+        <p>模型 API、提示词、工具调用、RAG、记忆、评估与部署。</p>
       </div>
       <div class="step">
-        <small>阶段 04 · 待学习</small>
-        <h3>深入原理与研究</h3>
-        <p>逐步学习模型基础、检索、记忆、评估与实验设计。</p>
+        <small>阶段 04 · 后续</small><h3>本地大模型与底层研究</h3>
+        <p>本地推理、量化、模型原理、微调与实验。</p>
       </div>
       <p class="note">路线用于规划；掌握当前知识后再进入下一阶段。</p>
     </section>
@@ -313,6 +323,59 @@ function saveCloudState() {
       "浏览器无法保存记录，当前更改仅在本次页面打开期间有效。";
   }
 }
+const ROADMAP = [
+  ["基础指针与动态内存",["指针与地址","指针赋值和 NULL","malloc 与 free","结构体指针","链表节点"]],
+  ["单链表",["单链表遍历","单链表插入","单链表删除","单链表查找","链表头插与尾插","按值删除与边界情况","链表长度与统计","链表反转","链表综合实践"]],
+  ["算法分析与线性结构",["时间复杂度入门","空间复杂度与调试","顺序表基础","顺序表插入删除","栈的概念与数组实现","链栈与应用","队列的概念与实现","循环队列","栈与队列综合实践"]],
+  ["递归、树与堆",["递归基础","递归与调用栈","二叉树结构","二叉树遍历","二叉搜索树","树的查找与插入","堆与优先队列","树结构综合实践"]],
+  ["查找、排序与图",["线性查找与二分查找","冒泡与选择排序","插入排序","归并排序","快速排序","图的表示","图的深度优先遍历","图的广度优先遍历"]],
+  ["综合巩固与 Python 衔接",["常见错误与内存安全","算法综合练习","小型数据结构项目","C 与 Python 数据结构对照","阶段能力评估与衔接"]]
+];
+function renderRoadmap(progress) {
+  const total = ROADMAP.reduce((n,m)=>n+m[1].length,0);
+  const completed = Math.max(0,Math.min(total,Number.isInteger(progress?.completedThrough)?progress.completedThrough:0));
+  const current = Number.isInteger(progress?.currentLesson)?progress.currentLesson:completed+1;
+  const pct = Math.round(completed/total*100);
+  document.getElementById("roadmapCount").textContent = "已掌握 "+completed+" / "+total+" 课";
+  document.getElementById("roadmapPercent").textContent = pct+"%";
+  document.getElementById("roadmapFill").style.width=pct+"%";
+  document.querySelector('[aria-label="第一阶段课程掌握进度"]').setAttribute("aria-valuenow",String(pct));
+  document.getElementById("roadmapNow").textContent = "当前第"+current+"课 · "+(progress?.status||"等待学习反馈")+"。课次为可调整的学习规划。";
+  const container=document.getElementById("roadmapModules");
+  container.replaceChildren();
+  let index=0;
+  ROADMAP.forEach(([name,lessons])=>{
+    const from=index+1,to=index+lessons.length;
+    const passed=Math.max(0,Math.min(lessons.length,completed-index));
+    const details=document.createElement("details");
+    details.className="module";
+    if(current>=from&&current<=to)details.open=true;
+    const summary=document.createElement("summary");
+    summary.textContent=name+" · "+passed+"/"+lessons.length+"课";
+    const hint=document.createElement("span");
+    hint.className="module-hint";
+    hint.textContent="（第"+from+"–"+to+"课）";
+    summary.append(hint);
+    const list=document.createElement("div");
+    list.className="module-list";
+    lessons.forEach((lesson)=>{
+      index++;
+      const state=index<=completed?"passed":index===current?"active":"pending";
+      const row=document.createElement("div");
+      row.className="lesson-row "+state;
+      const mark=document.createElement("span");
+      mark.className="lesson-mark";
+      mark.textContent=state==="passed"?"✓":state==="active"?"●":"○";
+      const text=document.createElement("span");
+      text.textContent="第"+index+"课 · "+lesson+(state==="active"?"（正在学习）":"");
+      row.append(mark,text);
+      list.append(row);
+    });
+    details.append(summary,list);
+    container.append(details);
+  });
+}
+renderRoadmap({completedThrough:8,currentLesson:9,status:"等待第9课代码与测试"});
 async function syncCloud() {
   const button = document.getElementById("sync");
   const status = document.getElementById("syncStatus");
@@ -327,6 +390,7 @@ async function syncCloud() {
     });
     if (!response.ok) throw new Error("HTTP " + response.status);
     const data = await response.json();
+    renderRoadmap(data.progress);
     const incoming = data.tasks;
     if (typeof data.lesson === "string" && data.lesson.trim()) {
       document.getElementById("lessonTitle").textContent = data.lesson;

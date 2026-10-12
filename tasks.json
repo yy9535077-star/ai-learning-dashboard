@@ -1,21 +1,24 @@
 {
-  "version": 1,
+  "version": 2,
+  "lesson": "第9课 · 单链表查找",
+  "duration": 30,
+  "progress": {
+    "completedThrough": 8,
+    "currentLesson": 9,
+    "status": "第9课待完成：独立编写查找函数与随堂测试"
+  },
   "tasks": [
     {
-      "id": "intro",
-      "text": "复习：指针改变指向与释放内存的区别"
+      "id": "lesson9-review",
+      "text": "复习链表遍历、空指针与返回节点地址（5分钟）"
     },
     {
-      "id": "insert",
-      "text": "理解单链表插入的两步指针操作"
+      "id": "lesson9-code",
+      "text": "独立完成 findNode(head, target) 查找函数（15分钟）"
     },
     {
-      "id": "practice",
-      "text": "自己写一次单链表插入代码"
-    },
-    {
-      "id": "review",
-      "text": "把代码和解释发给导师批改"
+      "id": "lesson9-test",
+      "text": "完成第9课随堂测试并提交代码供严格批改（10分钟）"
     }
   ]
 }

@@ -96,8 +96,8 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
 
   <section class="card focus">
     <h2>当前学习重点</h2>
-    <p><strong>C 语言 · 单链表插入</strong></p>
-    <p>理解节点之间的连接，练习先连接后继，再修改前驱指针。</p>
+    <p><strong id="lessonTitle">正在读取云端课程…</strong></p>
+    <p id="lessonDescription">学习内容以云端任务为准。</p>
     <p>学习节奏：讲解 → 自己写代码 → 随堂测试 → 批改纠错。</p>
   </section>
 
@@ -328,6 +328,13 @@ async function syncCloud() {
     if (!response.ok) throw new Error("HTTP " + response.status);
     const data = await response.json();
     const incoming = data.tasks;
+    if (typeof data.lesson === "string" && data.lesson.trim()) {
+      document.getElementById("lessonTitle").textContent = data.lesson;
+      document.getElementById("lessonDescription").textContent =
+        data.progress && typeof data.progress.status === "string"
+          ? data.progress.status
+          : "按实际掌握情况学习，完成后提交代码与测试答案。";
+    }
     if (!Array.isArray(incoming) || incoming.length > 200 ||
         !incoming.every(t => t && typeof t.id === "string" &&
           t.id.length > 0 && typeof t.text === "string" &&

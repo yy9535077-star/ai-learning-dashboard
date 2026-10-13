@@ -115,7 +115,7 @@
   "examDate": "2026-11-14",
   "examDateApproximate": true,
   "examMode": {
-    "enabled": true,
+    "enabled": false,
     "title": "线性代数期末冲刺",
     "completedTopics": [],
     "schedule": [
@@ -145,6 +145,11 @@
         "focus": "模拟试卷、错题复盘、考前查漏补缺"
       }
     ],
-    "note": "考试范围待老师大纲或题库核对；40课长期路线保留且不虚增进度"
+    "note": "用户选择完整理解优先：保留40课主线，不以应试速成替代；11月14日前适度配合题型复习，考后继续完整课程。"
+  },
+  "studyStrategy": {
+    "primary": "40课完整系统学习，理解、推导、练习、严格考核与视频辅助",
+    "examSupport": "11月14日前根据学校范围穿插针对性复习，不将应试训练计入已掌握课数",
+    "afterExam": "继续40课直到掌握，不以考试结束为课程终点"
   }
 }

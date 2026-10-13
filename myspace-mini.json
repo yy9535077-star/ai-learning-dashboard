@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "updated": "2026-10-13",
+  "project": "MySpace Mini",
+  "status": "需求已讨论，尚无可核实的开发交付物",
+  "stack": [
+    "Flutter",
+    "Dart",
+    "SQLite"
+  ],
+  "scope": "个人本地优先Mini，无账号、服务器、云同步、共享空间；AI接口预留但V1不接入AI",
+  "milestones": [
+    {
+      "id": "phase-1",
+      "name": "需求与原型",
+      "tasks": [
+        {
+          "id": "p1-1",
+          "title": "确认Mini范围与验收标准",
+          "done": false
+        },
+        {
+          "id": "p1-2",
+          "title": "晨光首页线框图",
+          "done": false
+        },
+        {
+          "id": "p1-3",
+          "title": "日历待办交互原型",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "工程基础",
+      "tasks": [
+        {
+          "id": "p2-1",
+          "title": "Flutter开发环境配置",
+          "done": false
+        },
+        {
+          "id": "p2-2",
+          "title": "创建项目与基础导航",
+          "done": false
+        },
+        {
+          "id": "p2-3",
+          "title": "SQLite本地数据库初始化",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "晨光首页",
+      "tasks": [
+        {
+          "id": "p3-1",
+          "title": "日期与问候",
+          "done": false
+        },
+        {
+          "id": "p3-2",
+          "title": "今日待办和主要目标",
+          "done": false
+        },
+        {
+          "id": "p3-3",
+          "title": "首页卡片显示与排序",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "phase-4",
+      "name": "待办与日历",
+      "tasks": [
+        {
+          "id": "p4-1",
+          "title": "待办增删改查",
+          "done": false
+        },
+        {
+          "id": "p4-2",
+          "title": "日历视图",
+          "done": false
+        },
+        {
+          "id": "p4-3",
+          "title": "学习工作生活分类",
+          "done": false
+        },
+        {
+          "id": "p4-4",
+          "title": "重复待办",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "phase-5",
+      "name": "数据与质量",
+      "tasks": [
+        {
+          "id": "p5-1",
+          "title": "本地持久化与重启恢复",
+          "done": false
+        },
+        {
+          "id": "p5-2",
+          "title": "输入校验与异常处理",
+          "done": false
+        },
+        {
+          "id": "p5-3",
+          "title": "基础测试与Bug修复",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "phase-6",
+      "name": "交付与展示",
+      "tasks": [
+        {
+          "id": "p6-1",
+          "title": "Android可运行构建",
+          "done": false
+        },
+        {
+          "id": "p6-2",
+          "title": "项目说明与截图",
+          "done": false
+        },
+        {
+          "id": "p6-3",
+          "title": "演示与版本验收",
+          "done": false
+        }
+      ]
+    }
+  ],
+  "completedIds": [],
+  "notes": "仅实际完成且验证的任务计入进度；需求讨论不算开发完成"
+}

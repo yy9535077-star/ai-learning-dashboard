@@ -95,6 +95,7 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
   .card{padding:20px}
 }
 .subjects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}.subject{border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--card)}.subject h3{margin:0 0 4px}.subject p{font-size:13px}.subject .bar{margin:10px 0}.subject a{color:var(--blue)}.subject button{background:#253c60;color:var(--text);font-size:13px}.subject details{margin-top:12px}.subject summary{cursor:pointer}.subject li{font-size:13px;padding:7px 0;border-bottom:1px solid var(--line)}.subject label{display:flex;gap:10px;align-items:center}.subject input{accent-color:var(--green)}@media(max-width:650px){.subjects{grid-template-columns:1fr}}
+#vocabForm{display:grid;grid-template-columns:1.4fr repeat(3,1fr) auto}#vocabForm input{width:100%;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--text);font:inherit}#vocabRecords{font-size:14px;color:var(--muted)}@media(max-width:760px){#vocabForm{grid-template-columns:1fr 1fr}#vocabForm button{grid-column:span 2}}
 </style>
 </head>
 <body>
@@ -112,6 +113,7 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
     <p>学习节奏：讲解 → 自己写代码 → 随堂测试 → 批改纠错。</p>
   </section>
 
+  <section class="card focus" aria-label="扇贝每日单词记录"><h2>📗 扇贝单词 · 每日进度</h2><p>词书：完全版六级考纲词汇（乱序） · 总量 7890 词</p><p id="vocabBaseline">10月13日基线：已学450词（5.7%），连续打卡4天；当日任务尚未确认完成。</p><form id="vocabForm"><input type="text" id="vocabDate" aria-label="学习日期" placeholder="日期 YYYY-MM-DD" required><input type="number" id="vocabLearned" aria-label="累计已学单词" placeholder="累计已学" min="0" max="7890" required><input type="number" id="vocabNew" aria-label="今日新词" placeholder="新词" min="0" required><input type="number" id="vocabReview" aria-label="今日复习" placeholder="复习" min="0" required><button type="submit">记录</button></form><p class="note">完成扇贝后再记录。网页支持手动录入，我也可以在你汇报后更新云端记录；不要把“打开App”当作完成。</p><div id="vocabRecords" aria-live="polite"></div></section>
   <section aria-label="四学科学习概览"><h2>我的四科学习</h2><p>以实际掌握情况为准；未测试不等于已掌握。进度保存在当前浏览器。</p><div id="subjects" class="subjects"></div></section>
   <div class="grid">
     <section class="card">
@@ -174,10 +176,11 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
 "use strict";
 
 const KEY = "coconut-ai-dashboard-v1";
+const VOCAB_KEY="coconut-vocab-log-v1";let vocabLog=[];try{const v=JSON.parse(localStorage.getItem(VOCAB_KEY));if(Array.isArray(v))vocabLog=v}catch(e){}function renderVocab(){const host=document.getElementById("vocabRecords");host.replaceChildren();vocabLog.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10).forEach(v=>{const p=document.createElement("p");p.textContent=v.date+" · 累计"+v.learned+"词 · 新词"+v.newWords+" · 复习"+v.review+" · 已汇报完成";host.append(p)})}document.getElementById("vocabDate").value=new Date().toLocaleDateString("en-CA");document.getElementById("vocabForm").addEventListener("submit",e=>{e.preventDefault();const date=document.getElementById("vocabDate").value.trim(),learned=Number(document.getElementById("vocabLearned").value),newWords=Number(document.getElementById("vocabNew").value),review=Number(document.getElementById("vocabReview").value);if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||![learned,newWords,review].every(Number.isInteger)||[learned,newWords,review].some(n=>n<0)||learned>7890){alert("请填写有效日期和非负整数");return}vocabLog=vocabLog.filter(x=>x.date!==date);vocabLog.push({date,learned,newWords,review});try{localStorage.setItem(VOCAB_KEY,JSON.stringify(vocabLog))}catch(e){}renderVocab()});renderVocab();
 const SUBJECT_KEY="coconut-subject-progress-v1";
 const SUBJECTS=[
 {id:"german",name:"🇩🇪 德语",level:"A1起步 · DW Deutschtrainer",desc:"第1课《自我介绍》正在学习，尚未通过测试。",lessons:["自我介绍 Sich vorstellen","对话 Im Gespräch","问候与告别","数字基础","家庭与人物","日常物品","本周复习测试"],url:"https://learngerman.dw.com/"},
-{id:"english",name:"🇬🇧 英语",level:"CET-6 450分 · 中级巩固",desc:"不重复初级语法，侧重真实听说、阅读、技术英语与写作。六级成绩不直接等同CEFR等级。",lessons:["精听与跟读","英文阅读与词汇","口语表达与纠错","精听与复述","计算机专业英语","美剧片段精学","本周复盘"],url:null},
+{id:"english",name:"🇬🇧 英语",level:"CET-6 450分 · 中级巩固",desc:"不重复初级语法，侧重真实听说、阅读、技术英语与写作。六级成绩不直接等同CEFR等级。",lessons:["扇贝单词：每日完成后汇报","精听与跟读","英文阅读与词汇","口语表达与纠错","精听与复述","计算机专业英语","美剧片段精学","本周复盘"],url:null},
 {id:"math",name:"📐 线性代数",level:"重新打基础 · 第1课待开始",desc:"从向量、线性组合开始，不假定此前大学课程已经掌握。",lessons:["向量与几何直观","向量加法与数乘","线性组合","线性相关与无关","矩阵的基本概念","矩阵运算","阶段测试"],url:null}
 ];
 let subjectState={};try{subjectState=JSON.parse(localStorage.getItem(SUBJECT_KEY))||{}}catch(e){}

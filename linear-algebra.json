@@ -85,5 +85,31 @@
         "综合项目与阶段考核"
       ]
     ]
-  ]
+  ],
+  "videoPolicy": {
+    "mode": "selective",
+    "rule": "按抽象程度和薄弱点布置视频，观看不代表掌握",
+    "resources": [
+      {
+        "name": "3Blue1Brown 线性代数的本质",
+        "url": "https://www.3blue1brown.com/topics/linear-algebra"
+      },
+      {
+        "name": "MIT OCW 18.06",
+        "url": "https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/"
+      }
+    ],
+    "assignments": [
+      {
+        "afterLesson": 1,
+        "title": "3Blue1Brown《线性代数的本质》第1集：向量究竟是什么",
+        "url": "https://www.3blue1brown.com/lessons/vectors",
+        "status": "待第1课授课后布置",
+        "questions": [
+          "向量与点的坐标有什么联系？",
+          "向量的大小和方向如何理解？"
+        ]
+      }
+    ]
+  }
 }

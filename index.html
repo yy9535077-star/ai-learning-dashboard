@@ -177,7 +177,7 @@ const KEY = "coconut-ai-dashboard-v1";
 const SUBJECT_KEY="coconut-subject-progress-v1";
 const SUBJECTS=[
 {id:"german",name:"🇩🇪 德语",level:"A1起步 · DW Deutschtrainer",desc:"第1课《自我介绍》正在学习，尚未通过测试。",lessons:["自我介绍 Sich vorstellen","对话 Im Gespräch","问候与告别","数字基础","家庭与人物","日常物品","本周复习测试"],url:"https://learngerman.dw.com/"},
-{id:"english",name:"🇬🇧 英语",level:"已有基础 · 水平待测",desc:"先完成诊断，再确定听说、词汇和阅读的具体路线。",lessons:["英语基础诊断（听力/阅读/表达）","日常口语与跟读","核心词汇与复习","短篇阅读与复述","基础写作与纠错","本周复盘"],url:null},
+{id:"english",name:"🇬🇧 英语",level:"CET-6 450分 · 中级巩固",desc:"不重复初级语法，侧重真实听说、阅读、技术英语与写作。六级成绩不直接等同CEFR等级。",lessons:["精听与跟读","英文阅读与词汇","口语表达与纠错","精听与复述","计算机专业英语","美剧片段精学","本周复盘"],url:null},
 {id:"math",name:"📐 线性代数",level:"重新打基础 · 第1课待开始",desc:"从向量、线性组合开始，不假定此前大学课程已经掌握。",lessons:["向量与几何直观","向量加法与数乘","线性组合","线性相关与无关","矩阵的基本概念","矩阵运算","阶段测试"],url:null}
 ];
 let subjectState={};try{subjectState=JSON.parse(localStorage.getItem(SUBJECT_KEY))||{}}catch(e){}

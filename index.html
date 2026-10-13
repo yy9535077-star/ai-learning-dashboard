@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#111827">
-<title>椰子鸡的 AI 学习控制台</title>
+<title>椰子鸡的学习控制台</title>
 <style>
 :root{
   color-scheme:dark;
@@ -94,12 +94,13 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
   main{padding:24px 16px 40px}
   .card{padding:20px}
 }
+.subjects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}.subject{border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--card)}.subject h3{margin:0 0 4px}.subject p{font-size:13px}.subject .bar{margin:10px 0}.subject a{color:var(--blue)}.subject button{background:#253c60;color:var(--text);font-size:13px}.subject details{margin-top:12px}.subject summary{cursor:pointer}.subject li{font-size:13px;padding:7px 0;border-bottom:1px solid var(--line)}.subject label{display:flex;gap:10px;align-items:center}.subject input{accent-color:var(--green)}@media(max-width:650px){.subjects{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <main>
   <header>
-    <div class="tag">一步一步，学会构建自己的 Agent</div>
+    <div class="tag">2029 留学目标 · 编程 / 德语 / 英语 / 数学</div>
     <h1>椰子鸡的 AI 学习控制台</h1>
     <p id="date"></p>
   </header>
@@ -111,6 +112,7 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
     <p>学习节奏：讲解 → 自己写代码 → 随堂测试 → 批改纠错。</p>
   </section>
 
+  <section aria-label="四学科学习概览"><h2>我的四科学习</h2><p>以实际掌握情况为准；未测试不等于已掌握。进度保存在当前浏览器。</p><div id="subjects" class="subjects"></div></section>
   <div class="grid">
     <section class="card">
       <h2>我的学习任务</h2>
@@ -165,13 +167,22 @@ footer{margin-top:24px;color:var(--muted);font-size:13px}
     </section>
   </div>
 
-  <footer>学习控制台 · 第二版 · 云端任务 + 本地完成记录</footer>
+  <footer>学习控制台 · 第三版 · 四学科进度 + 原有云端任务</footer>
 </main>
 
 <script>
 "use strict";
 
 const KEY = "coconut-ai-dashboard-v1";
+const SUBJECT_KEY="coconut-subject-progress-v1";
+const SUBJECTS=[
+{id:"german",name:"🇩🇪 德语",level:"A1起步 · DW Deutschtrainer",desc:"第1课《自我介绍》正在学习，尚未通过测试。",lessons:["自我介绍 Sich vorstellen","对话 Im Gespräch","问候与告别","数字基础","家庭与人物","日常物品","本周复习测试"],url:"https://learngerman.dw.com/"},
+{id:"english",name:"🇬🇧 英语",level:"已有基础 · 水平待测",desc:"先完成诊断，再确定听说、词汇和阅读的具体路线。",lessons:["英语基础诊断（听力/阅读/表达）","日常口语与跟读","核心词汇与复习","短篇阅读与复述","基础写作与纠错","本周复盘"],url:null},
+{id:"math",name:"📐 线性代数",level:"重新打基础 · 第1课待开始",desc:"从向量、线性组合开始，不假定此前大学课程已经掌握。",lessons:["向量与几何直观","向量加法与数乘","线性组合","线性相关与无关","矩阵的基本概念","矩阵运算","阶段测试"],url:null}
+];
+let subjectState={};try{subjectState=JSON.parse(localStorage.getItem(SUBJECT_KEY))||{}}catch(e){}
+function renderSubjects(){const host=document.getElementById("subjects");host.replaceChildren();SUBJECTS.forEach(sub=>{const done=subjectState[sub.id]||[];const card=document.createElement("article");card.className="subject";const h=document.createElement("h3");h.textContent=sub.name;const level=document.createElement("p");level.textContent=sub.level;const desc=document.createElement("p");desc.textContent=sub.desc;const stat=document.createElement("strong");stat.textContent=done.length+" / "+sub.lessons.length+" 项已完成";const bar=document.createElement("div");bar.className="bar";const fill=document.createElement("div");fill.style.cssText="height:100%;background:var(--green);width:"+Math.round(done.length/sub.lessons.length*100)+"%";bar.append(fill);const detail=document.createElement("details");const summary=document.createElement("summary");summary.textContent="展开逐课学习进度";const ul=document.createElement("ul");sub.lessons.forEach((lesson,i)=>{const li=document.createElement("li");const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.checked=done.includes(i);cb.addEventListener("change",()=>{const next=new Set(subjectState[sub.id]||[]);if(cb.checked)next.add(i);else next.delete(i);subjectState[sub.id]=[...next].sort((a,b)=>a-b);try{localStorage.setItem(SUBJECT_KEY,JSON.stringify(subjectState))}catch(e){}renderSubjects()});const text=document.createElement("span");text.textContent=lesson;label.append(cb,text);li.append(label);ul.append(li)});detail.append(summary,ul);card.append(h,level,desc,stat,bar,detail);if(sub.url){const link=document.createElement("p");const a=document.createElement("a");a.href=sub.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent="打开 DW 官方课程 ↗";link.append(a);card.append(link)}host.append(card)})}
+renderSubjects();
 const defaults = [
   {id:"intro",text:"复习：指针改变指向与释放内存的区别",done:false},
   {id:"insert",text:"理解单链表插入的两步指针操作",done:false},

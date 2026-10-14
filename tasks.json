@@ -1,24 +1,20 @@
 {
   "version": 2,
-  "lesson": "第9课 · 单链表查找",
+  "lesson": "第10课 · 链表头插与尾插（下次开始）",
   "duration": 30,
   "progress": {
-    "completedThrough": 8,
-    "currentLesson": 9,
-    "status": "第9课待完成：独立编写查找函数与随堂测试"
+    "completedThrough": 9,
+    "currentLesson": 10,
+    "status": "第9课已阶段性结课；查找函数曾正确完成，R900实机编译验证待办。今天学习结束，下次从第10课开始。"
   },
   "tasks": [
     {
-      "id": "lesson9-review",
-      "text": "复习链表遍历、空指针与返回节点地址（5分钟）"
+      "id": "lesson10-preview",
+      "text": "下次：复习头指针与节点连接，开始第10课头插与尾插"
     },
     {
-      "id": "lesson9-code",
-      "text": "独立完成 findNode(head, target) 查找函数（15分钟）"
-    },
-    {
-      "id": "lesson9-test",
-      "text": "完成第9课随堂测试并提交代码供严格批改（10分钟）"
+      "id": "lesson9-pc-verify",
+      "text": "以后使用R900时：编译验证第9课查找函数（不影响继续学习）"
     }
   ]
 }

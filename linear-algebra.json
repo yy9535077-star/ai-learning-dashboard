@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-10-13",
+  "updated": "2026-10-28",
   "completedThrough": 0,
   "currentLesson": 1,
   "status": "第1课待开始：向量与坐标。通过讲解、练习和测试后再更新。",
@@ -115,8 +115,8 @@
   "examDate": "2026-11-14",
   "examDateApproximate": true,
   "examMode": {
-    "enabled": false,
-    "title": "线性代数期末冲刺",
+    "enabled": true,
+    "title": "线性代数考前辅助复习",
     "completedTopics": [],
     "schedule": [
       {
@@ -145,7 +145,7 @@
         "focus": "模拟试卷、错题复盘、考前查漏补缺"
       }
     ],
-    "note": "用户选择完整理解优先：保留40课主线，不以应试速成替代；11月14日前适度配合题型复习，考后继续完整课程。"
+    "note": "enabled 仅表示开启考前辅助复习，不切换或替代40课长期主线；复习不计入已掌握课数，考后继续完整课程。阶段按当天日期匹配，已过期安排仅留作历史规划，不代表已完成。"
   },
   "studyStrategy": {
     "primary": "40课完整系统学习，理解、推导、练习、严格考核与视频辅助",
